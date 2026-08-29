@@ -1,0 +1,586 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+	<!-- ===== FAVICON ===== -->
+<link rel="icon" href="https://cadescolar.infinityfree.me/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="https://cadescolar.infinityfree.me/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGEM · Gestão Completa · INEP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	
+	<!-- ===== CHART.JS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- ============================================================ -->
+    <!-- ===== LINK DO ARQUIVO CSS EXTERNO ===== -->
+    <!-- ============================================================ -->
+    <!-- O arquivo style.css deve estar na mesma pasta que este HTML -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="style.css">
+	
+</head>
+<body>
+    <div class="app">
+        <!-- ============ HEADER ============ -->
+        <header class="header">
+            <div>
+                <h1><i class="fas fa-graduation-cap"></i> SIGEM</h1>
+                <span class="header-badge"><i class="fas fa-school"></i> Sistema Integrado de Gestão da Educação Municipal - S.S.B.V</span>
+            </div>
+            <div><span><i class="fas fa-database"></i> v1.0 2026</span></div>
+        </header>
+        <!-- ============ NAVEGAÇÃO ============ -->
+        <nav class="nav" id="mainNav">
+            <!--  (Sempre primeiro) -->
+            <button data-panel="painelDashboard" class="active"><i class="fas fa-chart-pie"></i> Painel</button>
+            <!-- 1º ESCOLA -->
+            <button data-panel="painelEscola"><i class="fas fa-building"></i> 1. Escola</button>
+            <!-- 2º GESTOR -->
+            <button data-panel="painelGestor"><i class="fas fa-user-tie"></i> 2. Gestor</button>
+            <!-- 3º PROFESSOR -->
+            <button data-panel="painelProfessor"><i class="fas fa-chalkboard-teacher"></i> 3. Professor</button>
+            <!-- 🆕 4º FUNCIONÁRIO -->
+            <button data-panel="painelFuncionario"><i class="fas fa-user-cog"></i> 4. Funcionário</button>
+            <!-- 5º DISCIPLINA -->
+            <button data-panel="painelDisciplina"><i class="fas fa-book"></i> 5. Disciplina</button>
+            <!-- 6º TURMA -->
+            <button data-panel="painelTurma"><i class="fas fa-users"></i> 6. Turma</button>
+            <!-- 7º MATRÍCULA (Botão destacado) -->
+            <button onclick="window.location.href='matricula.php'" style="background:#1e7b4a;color:white;">
+                <i class="fas fa-user-plus"></i> 7. Matrícula
+            </button>
+            <!-- 8º ALUNO -->
+            <button data-panel="painelAluno"><i class="fas fa-user-graduate"></i> 8. Aluno</button>
+            <!-- 9º FREQUÊNCIA -->
+            <button data-panel="painelFrequencia"><i class="fas fa-calendar-check"></i> 9. Frequência</button>
+            <!-- 10º NOTA -->
+            <button data-panel="painelNota"><i class="fas fa-star"></i> 10. Nota</button>
+            <!-- 11º CONTEÚDO -->
+            <button data-panel="painelConteudo"><i class="fas fa-book-open"></i> 11. Conteúdo</button>
+            <!-- 12º INFRAESTRUTURA -->
+            <button data-panel="painelInfraestrutura"><i class="fas fa-tools"></i> 12. Infraestrutura</button>
+            <!-- 13º RELATÓRIOS -->
+            <button data-panel="painelRelatorios"><i class="fas fa-file-alt"></i> 13. Relatórios</button>
+            <!-- 14º EXPORTAR INEP -->
+            <button data-panel="painelExportarINEP"><i class="fas fa-file-export"></i> 14. Exportar INEP</button>
+        </nav>
+        <!-- ============ TOAST ============ -->
+        <div class="toast-container" id="toastContainer"></div>
+        <!-- ============ MODAL ============ -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal" id="modalContent">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Cadastrar</h3>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+        <!-- ============ MAIN ============ -->
+        <div class="main">
+            <!-- ============ DASHBOARD ============ -->
+            <section id="painelDashboard" class="panel active">
+                <h2><i class="fas fa-chart-pie"></i> Painel</h2>
+                <div class="subtitle">Visão geral do sistema</div>
+                <div class="dashboard-stats" id="dashboardStats">
+                    <div class="stat-card" onclick="navegarPara('painelEscola')">
+                        <i class="fas fa-school"></i>
+                        <h3>Escolas</h3>
+                        <div class="number" id="totalEscolas">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navegarPara('painelDisciplina')">
+                        <i class="fas fa-book"></i>
+                        <h3>Disciplinas</h3>
+                        <div class="number" id="totalDisciplinas">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navegarPara('painelAluno')">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>Alunos</h3>
+                        <div class="number" id="totalAlunos">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navegarPara('painelProfessor')">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <h3>Professores</h3>
+                        <div class="number" id="totalProfessores">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navegarPara('painelFuncionario')">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Funcionários</h3>
+                        <div class="number" id="totalFuncionarios">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navegarPara('painelTurma')">
+                        <i class="fas fa-users"></i>
+                        <h3>Turmas</h3>
+                        <div class="number" id="totalTurmas">0</div>
+                    </div>
+                    <div class="stat-card" onclick="navegarPara('painelFrequencia')">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>Frequências Hoje</h3>
+                        <div class="number" id="frequenciasHoje">0</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-box"><h4><i class="fas fa-users"></i> Alunos por Turma</h4><canvas id="chartAlunosPorTurma"></canvas></div>
+                    <div class="chart-box"><h4><i class="fas fa-calendar-check"></i> Frequência (Últimos 7 dias)</h4><canvas id="chartFrequencia"></canvas></div>
+                </div>
+                <div class="dashboard-custom">
+                    <h3 style="color:#0b2b4a;margin:30px 0 10px 0;border-top:2px solid #eef4fc;padding-top:30px;">
+                        <i class="fas fa-chart-line"></i> Dashboard Interativo
+                    </h3>
+                    <div class="subtitle">Filtros e gráficos dinâmicos</div>
+                    <div class="filtros-dashboard">
+                        <select id="dashPeriodo" onchange="atualizarDashboardInterativo()">
+                            <option value="mes">Último Mês</option>
+                            <option value="trimestre">Último Trimestre</option>
+                            <option value="semestre">Último Semestre</option>
+                            <option value="ano">Último Ano</option>
+                        </select>
+                        <select id="dashEscola" onchange="atualizarDashboardInterativo()">
+                            <option value="">Todas as Escolas</option>
+                        </select>
+                        <button class="btn btn-primary btn-sm" onclick="atualizarDashboardInterativo()">
+                            <i class="fas fa-sync"></i> Atualizar
+                        </button>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dash-card"><h4><i class="fas fa-user-graduate"></i> Alunos por Turma</h4><canvas id="chartAlunosTurma"></canvas></div>
+                        <div class="dash-card"><h4><i class="fas fa-calendar-check"></i> Frequência Mensal</h4><canvas id="chartFrequenciaMensal"></canvas></div>
+                        <div class="dash-card"><h4><i class="fas fa-clock"></i> Distribuição por Turno</h4><canvas id="chartTurnos"></canvas></div>
+                        <div class="dash-card">
+                            <h4><i class="fas fa-wheelchair"></i> Alunos PCD</h4>
+                            <canvas id="chartPCD"></canvas>
+                            <div class="pcd-summary">
+                                <div class="pcd-item total-alunos"><span>👥 Total:</span><span class="numero" style="font-size:22px;font-weight:700;color:#0b2b4a;">0</span></div>
+                                <div class="pcd-item"><span class="dot pcd"></span><span style="font-weight:600;">PCD:</span><span class="numero pcd-num">0</span><span class="percent">(0%)</span></div>
+                                <div class="pcd-item"><span class="dot nao-pcd"></span><span style="font-weight:600;">Não PCD:</span><span class="numero nao-pcd-num">0</span><span class="percent">(0%)</span></div>
+                            </div>
+                        </div>
+                        <div class="dash-card full-width"><h4><i class="fas fa-star"></i> Médias por Disciplina</h4><canvas id="chartMedias"></canvas></div>
+                        <div class="dash-card full-width"><h4><i class="fas fa-trophy"></i> Top 10 Alunos</h4><canvas id="chartTopAlunos"></canvas></div>
+                    </div>
+                </div>
+            </section>
+            <!-- ============ ESCOLA (COMPLETO INEP) ============ -->
+            <section id="painelEscola" class="panel">
+                <h2><i class="fas fa-school"></i> Escola</h2>
+                <div class="subtitle">Instituições cadastradas com todos os campos INEP/Educacenso</div>
+                <div class="filters">
+                    <input id="filtroEscola" placeholder="🔍 Buscar por nome, cidade..." oninput="renderizarEscolas()">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalEscola()"><i class="fas fa-plus-circle"></i> Nova Escola</button>
+                    <button class="btn btn-secondary" onclick="carregarEscolasForcado()"><i class="fas fa-sync"></i> Recarregar</button>
+                </div>
+                <div class="escola-cards" id="escolaCards"><p style="color:#4a6a85;padding:20px;">Carregando escolas...</p></div>
+            </section>
+            <!-- ============ GESTOR (COMPLETO INEP) ============ -->
+            <section id="painelGestor" class="panel">
+                <h2><i class="fas fa-user-tie"></i> Gestores</h2>
+                <div class="subtitle">Cadastro de diretores, Vice-diretores Téc.  Pedagógico</div>
+                <div class="filters">
+                    <input id="filtroGestor" placeholder="🔍 Buscar por nome, cargo..." oninput="renderizarGestores()">
+                    <select id="filtroGestorEscola" onchange="renderizarGestores()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalGestor()"><i class="fas fa-user-plus"></i> Novo Gestor</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Nome</th><th>CPF</th><th>Data Nasc.</th><th>Email</th><th>Cargo</th><th>Escola</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaGestores"><tr><td colspan="7" style="text-align:center;color:#4a6a85;">Nenhum gestor cadastrado.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ PROFESSOR (COMPLETO INEP) ============ -->
+            <section id="painelProfessor" class="panel">
+                <h2><i class="fas fa-chalkboard-teacher"></i> Professores</h2>
+                <div class="subtitle">Cadastro de Docente</div>
+                <div class="filters">
+                    <input id="filtroProfessor" placeholder="🔍 Buscar por nome, email..." oninput="renderizarProfessores()">
+                    <select id="filtroProfEscola" onchange="renderizarProfessores()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalProfessor()"><i class="fas fa-plus-circle"></i> Novo Professor</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Nome</th><th>CPF</th><th>Data Nasc.</th><th>Sexo</th><th>Raça</th><th>Email</th><th>Escola</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaProfessores"><tr><td colspan="8" style="text-align:center;color:#4a6a85;">Nenhum professor cadastrado.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ 🆕 FUNCIONÁRIO (COMPLETO INEP) ============ -->
+            <section id="painelFuncionario" class="panel">
+                <h2><i class="fas fa-user-cog"></i> Funcionários</h2>
+                <div class="subtitle">Cadastro de funcionários</div>
+                <div class="filters">
+                    <input id="filtroFuncionario" placeholder="🔍 Buscar por nome, CPF, cargo..." oninput="renderizarFuncionarios()">
+                    <select id="filtroFuncEscola" onchange="renderizarFuncionarios()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                    <select id="filtroFuncCargo" onchange="renderizarFuncionarios()">
+                        <option value="todos">Todos os Cargos</option>
+                        <option value="ADMINISTRATIVO">Administrativo</option>
+                        <option value="COORDENADOR">Coordenador</option>
+                        <option value="SECRETARIO">Secretário</option>
+                        <option value="BIBLIOTECARIO">Bibliotecário</option>
+                        <option value="INSPETOR">Inspetor</option>
+                        <option value="PORTEIRO">Porteiro</option>
+                        <option value="SERVIÇOS GERAIS">Serviços Gerais</option>
+                        <option value="MOTORISTA">Motorista</option>
+                        <option value="MERENDEIRA">Merendeira</option>
+                        <option value="AUXILIAR">Auxiliar</option>
+                        <option value="OUTRO">Outro</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalFuncionario()"><i class="fas fa-user-plus"></i> Novo Funcionário</button>
+                    <button class="btn btn-secondary" onclick="recarregarFuncionarios()"><i class="fas fa-sync"></i> Recarregar</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>INEP</th>
+                                <th>CPF</th>
+                                <th>Data Nasc.</th>
+                                <th>Sexo</th>
+                                <th>Raça</th>
+                                <th>Cargo</th>
+                                <th>Escola</th>
+                                <th>PCD</th>
+                                <th>CNH</th>
+                                <th>Título</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaFuncionarios">
+                            <tr><td colspan="12" style="text-align:center;color:#4a6a85;">Nenhum funcionário cadastrado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ DISCIPLINA ============ -->
+            <section id="painelDisciplina" class="panel">
+                <h2><i class="fas fa-book"></i> Disciplinas</h2>
+                <div class="subtitle">Cadastro de disciplinas por escola</div>
+                <div class="filters">
+                    <input id="filtroDisciplina" placeholder="🔍 Buscar por nome, código..." oninput="renderizarDisciplinas()">
+                    <select id="filtroDiscEscola" onchange="renderizarDisciplinas()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalDisciplina()"><i class="fas fa-plus-circle"></i> Nova Disciplina</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Disciplina</th><th>Código</th><th>Carga Horária</th><th>Escola</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaDisciplinas"><tr><td colspan="5" style="text-align:center;color:#4a6a85;">Nenhuma disciplina cadastrada.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ TURMA (COMPLETO INEP) ============ -->
+            <section id="painelTurma" class="panel">
+                <h2><i class="fas fa-users"></i> Turmas</h2>
+                <div class="subtitle">Cadastro de Turmas</div>
+                <div class="filters">
+                    <input id="filtroTurma" placeholder="🔍 Buscar por nome..." oninput="renderizarTurmas()">
+                    <select id="filtroTurmaEscola" onchange="renderizarTurmas()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalTurma()"><i class="fas fa-plus-circle"></i> Nova Turma</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Turma</th><th>INEP</th><th>Modalidade</th><th>Ano</th><th>Professor</th><th>Turno</th><th>Escola</th><th>Alunos</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaTurmas"><tr><td colspan="9" style="text-align:center;color:#4a6a85;">Nenhuma turma cadastrada.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ ALUNO (COMPLETO INEP) ============ -->
+            <section id="painelAluno" class="panel">
+                <h2><i class="fas fa-user-graduate"></i> Alunos</h2>
+                <div class="subtitle">Cadastro de Alunos</div>
+                <div class="filters">
+                    <input id="filtroAluno" placeholder="🔍 Buscar por nome, ID..." oninput="renderizarAlunos()">
+                    <select id="filtroAlunoEscola" onchange="renderizarAlunos()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                    <select id="filtroAlunoTurma" onchange="renderizarAlunos()">
+                        <option value="todas">Todas as Turmas</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalAluno()"><i class="fas fa-user-plus"></i> Novo Aluno</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>ID</th><th>INEP</th><th>Nome</th><th>CPF</th><th>Data Nasc.</th><th>Sexo</th><th>Raça</th><th>Turma</th><th>PCD</th><th>Bolsa Fam.</th><th>Situação</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaAlunos"><tr><td colspan="12" style="text-align:center;color:#4a6a85;">Nenhum aluno cadastrado.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ FREQUÊNCIA ============ -->
+            <section id="painelFrequencia" class="panel">
+                <h2><i class="fas fa-calendar-check"></i> Frequência</h2>
+                <div class="subtitle">Planilha de presença · Clique em uma célula para alternar entre P (Presente) e F (Falta)</div>
+                <div class="filters">
+                    <div class="form-group">
+                        <label><i class="fas fa-school"></i> Escola</label>
+                        <select id="freqFiltroEscola" onchange="carregarTurmasFrequencia(); renderizarPlanilha();">
+                            <option value="todas">Todas as Escolas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> Turma</label>
+                        <select id="freqFiltroTurma" onchange="renderizarPlanilha();">
+                            <option value="todas">Todas as Turmas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-chalkboard-teacher"></i> Professor</label>
+                        <select id="freqFiltroProfessor" onchange="renderizarPlanilha();">
+                            <option value="todos">Todos os Professores</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-book"></i> Disciplina</label>
+                        <select id="freqFiltroDisciplina" onchange="renderizarPlanilha();">
+                            <option value="todas">Todas as Disciplinas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Turno</label>
+                        <select id="freqFiltroTurno" onchange="renderizarPlanilha();">
+                            <option value="todos">Todos os Turnos</option>
+                            <option value="MANHÃ">MANHÃ</option>
+                            <option value="TARDE">TARDE</option>
+                            <option value="NOITE">NOITE</option>
+                            <option value="INTERMEDIÁRIO">INTERMEDIÁRIO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-sort-numeric-up"></i> Série</label>
+                        <select id="freqFiltroSerie" onchange="renderizarPlanilha();">
+                            <option value="todas">Todas as Séries</option>
+                            <option value="1º">1º Ano</option>
+                            <option value="2º">2º Ano</option>
+                            <option value="3º">3º Ano</option>
+                            <option value="4º">4º Ano</option>
+                            <option value="5º">5º Ano</option>
+                            <option value="6º">6º Ano</option>
+                            <option value="7º">7º Ano</option>
+                            <option value="8º">8º Ano</option>
+                            <option value="9º">9º Ano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-alt"></i> Mês/Ano</label>
+                        <input type="month" id="freqFiltroMes" onchange="renderizarPlanilha();">
+                    </div>
+                    <div class="form-group" style="flex:0 0 auto;">
+                        <button class="btn btn-primary btn-sm" onclick="salvarFrequenciasPlanilha()">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="limparFrequenciasPlanilha()">
+                            <i class="fas fa-undo"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+                <div class="planilha-container">
+                    <table id="planilhaFrequencia">
+                        <thead id="planilhaHead"></thead>
+                        <tbody id="planilhaBody"><tr><td style="text-align:center;color:#4a6a85;">Selecione os filtros e carregue a planilha</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="freq-resumo" id="freqResumo">
+                    <span class="resumo-item"><i class="fas fa-user-graduate"></i> Alunos: <strong id="resumoAlunos">0</strong></span>
+                    <span class="resumo-item"><i class="fas fa-check-circle" style="color:#0f6b3a;"></i> Presentes: <strong id="resumoPresentes">0</strong></span>
+                    <span class="resumo-item"><i class="fas fa-times-circle" style="color:#a13232;"></i> Faltas: <strong id="resumoFaltas">0</strong></span>
+                    <span class="resumo-item">
+                        <span class="badge badge-presente">P = Presente</span>
+                        <span class="badge badge-falta">F = Falta</span>
+                        <span class="badge badge-justificativa">📝 = Justificada</span>
+                    </span>
+                </div>
+            </section>
+            <!-- ============ NOTA ============ -->
+            <section id="painelNota" class="panel">
+                <h2><i class="fas fa-star"></i> Notas</h2>
+                <div class="subtitle">Avaliação por bimestre</div>
+                <div class="filters">
+                    <input id="filtroNota" placeholder="🔍 Buscar por aluno, disciplina..." oninput="renderizarNotas()">
+                    <select id="filtroNotaBimestre" onchange="renderizarNotas()">
+                        <option value="">Todos os Bimestres</option>
+                        <option value="1">1° Bimestre</option>
+                        <option value="2">2° Bimestre</option>
+                        <option value="3">3° Bimestre</option>
+                        <option value="4">4° Bimestre</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalNota()"><i class="fas fa-plus-circle"></i> Lançar Nota</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Aluno</th><th>Escola</th><th>Disciplina</th><th>Nota</th><th>Bimestre</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaNotas"><tr><td colspan="6" style="text-align:center;color:#4a6a85;">Nenhuma nota lançada.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ CONTEÚDO ============ -->
+            <section id="painelConteudo" class="panel">
+                <h2><i class="fas fa-book-open"></i> Conteúdo</h2>
+                <div class="subtitle">Plano de aula</div>
+                <div class="filters">
+                    <input id="filtroConteudo" placeholder="🔍 Buscar por disciplina..." oninput="renderizarConteudos()">
+                    <input type="date" id="filtroConteudoData" onchange="renderizarConteudos()">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalConteudo()"><i class="fas fa-plus-circle"></i> Novo Conteúdo</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Disciplina</th><th>Escola</th><th>Data</th><th>Conteúdo</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaConteudo"><tr><td colspan="5" style="text-align:center;color:#4a6a85;">Nenhum conteúdo cadastrado.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ INFRAESTRUTURA ============ -->
+            <section id="painelInfraestrutura" class="panel">
+                <h2><i class="fas fa-tools"></i> Infraestrutura</h2>
+                <div class="subtitle">Dados de infraestrutura da escola</div>
+                <div class="filters">
+                    <select id="filtroInfraEscola" onchange="renderizarInfraestrutura()">
+                        <option value="todas">Todas as Escolas</option>
+                    </select>
+                    <input type="number" id="filtroInfraAno" placeholder="Ano" value="2026" onchange="renderizarInfraestrutura()">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="abrirModalInfraestrutura()"><i class="fas fa-plus-circle"></i> Nova Infraestrutura</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Escola</th><th>Ano</th><th>Salas</th><th>Lab. Informática</th><th>Lab. Ciências</th><th>Lab. Robótica</th><th>Biblioteca</th><th>Quadra</th><th>Internet</th><th>Acessibilidade</th><th>Ações</th></tr></thead>
+                        <tbody id="tabelaInfraestrutura"><tr><td colspan="11" style="text-align:center;color:#4a6a85;">Nenhum registro de infraestrutura cadastrado.</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- ============ RELATÓRIOS ============ -->
+            <section id="painelRelatorios" class="panel">
+                <h2><i class="fas fa-file-alt"></i> Relatórios</h2>
+                <div class="subtitle">Filtros avançados para relatórios personalizados</div>
+                <div class="relatorio-filtros">
+                    <div class="form-group"><label><i class="fas fa-school"></i> Escola</label><select id="filtroRelEscola"><option value="todas">Todas as Escolas</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-users"></i> Turma</label><select id="filtroRelTurma"><option value="todas">Todas as Turmas</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-chalkboard-teacher"></i> Professor</label><select id="filtroRelProfessor"><option value="todos">Todos os Professores</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-user-graduate"></i> Aluno</label><select id="filtroRelAluno"><option value="todos">Todos os Alunos</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-layer-group"></i> Bimestre</label>
+                        <select id="filtroRelBimestre">
+                            <option value="todos">Todos os Bimestres</option>
+                            <option value="1">1° Bimestre</option>
+                            <option value="2">2° Bimestre</option>
+                            <option value="3">3° Bimestre</option>
+                            <option value="4">4° Bimestre</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label><i class="fas fa-calendar-alt"></i> Período</label>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <input type="date" id="filtroRelDataInicio" style="flex:1; min-width:120px;">
+                            <input type="date" id="filtroRelDataFim" style="flex:1; min-width:120px;">
+                        </div>
+                    </div>
+                    <div class="form-group"><label><i class="fas fa-filter"></i> Status</label>
+                        <select id="filtroRelStatus">
+                            <option value="todos">Todos</option>
+                            <option value="P">Presente</option>
+                            <option value="F">Falta</option>
+                        </select>
+                    </div>
+                    <div class="form-group btn-group-filtros">
+                        <button class="btn btn-primary" onclick="gerarRelatorio()"><i class="fas fa-search"></i> Gerar Relatório</button>
+                        <button class="btn btn-secondary" onclick="limparFiltrosRelatorio()"><i class="fas fa-undo"></i> Limpar</button>
+                    </div>
+                </div>
+                <div class="relatorio-actions">
+                    <button class="btn btn-success" onclick="gerarRelatorio('turmas')"><i class="fas fa-users"></i> Turmas</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('frequencia')"><i class="fas fa-calendar-check"></i> Frequência</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('notas')"><i class="fas fa-star"></i> Notas</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('professores')"><i class="fas fa-chalkboard-teacher"></i> Professores</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('funcionarios')"><i class="fas fa-user-cog"></i> Funcionários</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('alunos')"><i class="fas fa-user-graduate"></i> Alunos</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('gestores')"><i class="fas fa-user-tie"></i> Gestores</button>
+                    <button class="btn btn-success" onclick="gerarRelatorio('infraestrutura')"><i class="fas fa-tools"></i> Infraestrutura</button>
+                </div>
+                <div class="relatorio-actions">
+                    <button class="btn btn-primary" onclick="exportarHTML()"><i class="fas fa-code"></i> Exportar HTML</button>
+                    <button class="btn btn-pdf" onclick="exportarPDF()"><i class="fas fa-file-pdf"></i> Salvar PDF</button>
+                    <button class="btn btn-warning" onclick="imprimirRelatorio()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="btn btn-success" onclick="exportarCSV()"><i class="fas fa-file-excel"></i> Exportar CSV</button>
+                </div>
+                <div id="relatorioOutput" class="relatorio-output">
+                    <p style="color:#3b5f7a;"><i class="fas fa-info-circle"></i> Selecione os filtros desejados e clique em "Gerar Relatório".</p>
+                </div>
+            </section>
+            <!-- ============ EXPORTAR INEP ============ -->
+            <section id="painelExportarINEP" class="panel">
+                <h2><i class="fas fa-file-export"></i> Exportar INEP</h2>
+                <div class="subtitle">Exportar dados no formato exigido pelo Censo Escolar (Educacenso) - Registros 00, 10, 20, 30, 40, 50 e 60</div>
+                <div class="filters">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-alt"></i> Ano de Referência</label>
+                        <select id="inepAno">
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-school"></i> Escola</label>
+                        <select id="inepEscola">
+                            <option value="todas">Todas as Escolas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-file"></i> Tipo de Exportação</label>
+                        <select id="inepTipo">
+                            <option value="completo">Dados Completos</option>
+                            <option value="alunos">Apenas Alunos</option>
+                            <option value="professores">Apenas Professores</option>
+                            <option value="turmas">Apenas Turmas</option>
+                            <option value="infraestrutura">Apenas Infraestrutura</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:0 0 auto;">
+                        <button class="btn btn-success" onclick="exportarINEP()">
+                            <i class="fas fa-file-export"></i> Gerar Arquivo INEP
+                        </button>
+                    </div>
+                </div>
+                <div class="relatorio-output" id="inepOutput">
+                    <p style="color:#3b5f7a;"><i class="fas fa-info-circle"></i> Selecione o ano e clique em "Gerar Arquivo INEP" para exportar os dados no formato exigido pelo Censo Escolar.</p>
+                </div>
+            </section>
+        </div>
+        <!-- ============ FOOTER ============ -->
+        <div class="footer">
+            <span><i class="fas fa-user-code"></i> <strong>Desenvolvedores:</strong> Professor Nixo Auli & Jorge Antonio</span>
+            <span><i class="fas fa-version"></i> v5.0 - Compatível com Educacenso 2026</span>
+        </div>
+    </div>
+    <!-- ======================================================================= -->
+    <!-- JAVASCRIPT COMPLETO                                                    -->
+    <!-- ======================================================================= -->
+    <script src="script.js"></script>
+</body>
+</html>
